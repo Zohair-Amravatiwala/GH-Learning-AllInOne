@@ -29,11 +29,11 @@ jobs:
   test:
     name: Test Node.js App
     needs: build
-    runs-on: ${{matrix.os}}
+    runs-on: ${{ matrix.os }}
     strategy:
       matrix: 
-        node-version: [12.x, 14.x, 16.x]
-        os: [ubuntu-latest, windows-latest]
+        node-version: [12.x, 14.x]
+        os: [ubuntu-latest, windows-2016]
     
     steps:
       - name: Download Build Artifacts
@@ -42,10 +42,10 @@ jobs:
           name: webpack-artifacts  
           path: public
       - name: use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v1
         with:
           node-version: ${{ matrix.node-version }}
-          cache: 'npm'
+          # cache: 'npm'
       - name: Run tests
         run: |
           npm install
