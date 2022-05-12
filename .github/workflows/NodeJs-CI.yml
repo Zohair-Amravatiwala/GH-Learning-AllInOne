@@ -36,6 +36,8 @@ jobs:
         os: [ubuntu-latest, windows-2016]
     
     steps:
+      - uses: actions/checkout@v3
+        name: CheckOut Repo
       - name: Download Build Artifacts
         uses: actions/download-artifact@main
         with:
