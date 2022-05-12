@@ -19,7 +19,7 @@ jobs:
       - name: Install & build Node.js App
         run: |
           npm install
-          npm build 
+          npm run build 
 
     # strategy:
     #   matrix:
