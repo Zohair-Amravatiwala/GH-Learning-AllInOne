@@ -75,4 +75,4 @@ jobs:
           context: .
           file: ./Dockerfile
           push: true
-          tags: ghcr.io/zohair-amravatiwala/tic-tac-toe:latest
+          tags: ghcr.io/zohair-amravatiwala/NodeApp:latest
