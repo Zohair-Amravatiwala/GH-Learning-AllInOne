@@ -1,0 +1,78 @@
+name: Node.js Docker Package
+
+on:
+  push:
+    branches: [main, gh-nodejs-package]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    name: Build Node.js App
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        name: CheckOut Repo
+      - name: Install & build Node.js App
+        run: |
+          npm ci
+          npm run build --if-present
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@main
+        with:
+          name: webpack-artifacts
+          path: public/
+  
+  test:
+    name: Test Node.js App
+    needs: build
+    strategy:
+      matrix: 
+        node-version: [12.x, 14.x]
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v3
+        name: CheckOut Repo
+      - name: Download Build Artifacts
+        uses: actions/download-artifact@main
+        with:
+          name: webpack-artifacts  
+          path: public
+      - name: use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node-version }}
+          # cache: 'npm'
+      - name: Run tests
+        run: |
+          npm install
+          npm test
+        env:
+          CI: true
+  
+  package:
+    name: Build and push Docker Image
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v3
+      - name: Download Artifacts
+        uses: actions/download-artifact@main
+        with:
+          name: webpack-artifacts
+          path: public
+      - name: Login Docker GHCR
+        uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build and Push Image
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          file: ./Dockerfile
+          push: true
+          tags: ghcr.io/zohair-amravatiwala/tic-tac-toe:latest
