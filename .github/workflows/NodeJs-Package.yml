@@ -77,4 +77,4 @@ jobs:
           context: .
           file: ./Dockerfile
           push: true
-          tags: ghcr.io/zohair-amravatiwala/NodeApp:latest
+          tags: ghcr.io/zohair-amravatiwala/nodeapp:latest
