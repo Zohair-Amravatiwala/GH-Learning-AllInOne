@@ -6,7 +6,13 @@ on:
   push:
     branches: [main, gh-nodejs-deploy]
   workflow_dispatch:
-  
+    inputs:
+      PlanOnly:
+        type: boolean
+        description: "Select to only Run TF plan"
+        required: true
+        default: true
+
 env:
   DOCKER_IMAGE_NAME: nodeapp:latest
   IMAGE_REGISTRY_URL: ghcr.io
@@ -44,4 +50,6 @@ jobs:
           terraform  init -input=false -backend-config="resource_group_name=$TF_Backend_RG" -backend-config="storage_account_name=$TF_Backend_StorageAcc_Name" -backend-config="container_name=$TF_Backend_Container_Name" -backend-config="key='$GITHUB_WORKFLOW/terraform.tfstate'"
           echo "##[command]Run Terraform plan"
           terraform  plan -input=false -out=tfPlan -var-file=terraform-dev.tfvars 
-         
+          if ${{ github.event.inputs.PlanOnly }}
+          then
+            echo "Terraform Plan Only"
