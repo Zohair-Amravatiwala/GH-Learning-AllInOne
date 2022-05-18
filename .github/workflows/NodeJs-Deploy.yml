@@ -5,11 +5,16 @@ on:
     types: [labeled]
   push:
     branches: [main]
+  workflow_dispatch:
   
 env:
   DOCKER_IMAGE_NAME: nodeapp:latest
   IMAGE_REGISTRY_URL: ghcr.io
   # AZURE_WEBAPP_NAME: Zohair-Amravatiwala-ttt-app
+
+defaults:
+  run:
+    working-directory: ./Terraform
 
 jobs:
   Dev:
@@ -21,6 +26,9 @@ jobs:
       ARM_CLIENT_SECRET: ${{ secrets.AZURE_AD_CLIENT_SECRET }}
       ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
       ARM_TENANT_ID: ${{ secrets.AZURE_AD_TENANT_ID }}
+      TF_Backend_RG: ${{ secrets.TF_BACKEND_RG}}
+      TF_Backend_StorageAcc_Name: ${{ secrets.TF_BACKEND_SA}}
+      TF_Backend_Container_Name: ${{ secrets.TF_Backend_CONTAINER}}
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v3
@@ -29,3 +37,22 @@ jobs:
         with:
           terraform_version: 1.1.7
           # cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
+      - name: Terraform init
+        run: |
+          echo "##[command]Export variables"
+          # export ARM_TENANT_ID=$tenantId #get tenant Id from env variables
+          # export ARM_SUBSCRIPTION_ID=$(az account show --query 'id' --output tsv)
+          # export ARM_CLIENT_ID=$servicePrincipalId
+          # export ARM_CLIENT_SECRET=$servicePrincipalKey
+          echo "##[command]Run Terraform init"
+          terraform  init -input=false -backend-config="resource_group_name=$(TF_Backend_RG)" -backend-config="storage_account_name=$(TF_Backend_StorageAcc_Name)" -backend-config="container_name=$(TF_Backend_Container_Name)" -backend-config="key='$GITHUB_WORKFLOW/terraform.tfstate'"
+          echo "##[command]Run Terraform plan"
+          terraform  plan -input=false -out=tfPlan
+          # if [ '${{ parameters.tfPlanOnly }}' == 'False' ];
+          # then
+          #   echo "##[command]Run Terraform apply"
+          #   terraform  apply -input=false -auto-approve tfPlan
+          # else
+          #   echo "Pipeline was executed in 'plan only' mode. To apply changes uncheck the 'Run Terraform plan only' parameter when running the pipeline."
+
+          # fi
