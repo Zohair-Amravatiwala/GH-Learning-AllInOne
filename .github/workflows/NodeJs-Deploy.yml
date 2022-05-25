@@ -8,10 +8,10 @@ on:
         description: "Select to only Run TF plan"
         required: true
         default: true
-  pull_request:
-    types: [labeled]
-  push:
-    branches: [main, gh-nodejs-deploy]
+  # pull_request:
+  #   types: [labeled]
+  # push:
+  #   branches: [main, gh-nodejs-deploy]
 
 env:
   DOCKER_IMAGE_NAME: nodeapp:latest
