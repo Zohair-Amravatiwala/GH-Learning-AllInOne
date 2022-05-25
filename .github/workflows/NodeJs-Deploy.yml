@@ -1,10 +1,6 @@
 name: NodeJs App Terraform Deploy
 
 on:
-  pull_request:
-    types: [labeled]
-  push:
-    branches: [main, gh-nodejs-deploy]
   workflow_dispatch:
     inputs:
       PlanOnly:
@@ -12,6 +8,10 @@ on:
         description: "Select to only Run TF plan"
         required: true
         default: true
+  pull_request:
+    types: [labeled]
+  push:
+    branches: [main, gh-nodejs-deploy]
 
 env:
   DOCKER_IMAGE_NAME: nodeapp:latest
@@ -53,3 +53,6 @@ jobs:
           if ${{ github.event.inputs.PlanOnly }}
           then
             echo "Terraform Plan Only"
+          else
+            echo "##[command]Run Terraform apply"
+            terraform apply -var-file=terraform-dev.tfvars -auto-approve -input=false tfPlan
