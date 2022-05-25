@@ -15,3 +15,11 @@ tags = {
   "DeployedBy" = "GitHub-Actions"
   "Repo" = "GH-Learning-AllInOne"
 }
+
+image_registry_url = "ghcr.io"
+ghcr_username = ${{ github.actor }}
+ghcr_password = ${{ secrets.GITHUB_TOKEN }}
+repo_name = ${{ github.repository }}
+image_name = ${{env.DOCKER_IMAGE_NAME}}
+
+# ${{env.IMAGE_REGISTRY_URL}}/${{ github.repository }}/${{env.DOCKER_IMAGE_NAME}}:${{ github.sha }}

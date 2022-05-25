@@ -13,6 +13,13 @@ provider "azurerm" {
   features {}
 }
 
+locals {
+ env_variables = {
+   DOCKER_REGISTRY_SERVER_URL            = var.image_registry_url
+   DOCKER_REGISTRY_SERVER_USERNAME       =  var.ghcr_username
+   DOCKER_REGISTRY_SERVER_PASSWORD       = var.ghcr_password
+ }
+}
 resource "azurerm_resource_group" "asp" {
   name = var.resourceGroup
   location = var.location
@@ -51,7 +58,10 @@ resource "azurerm_app_service" "app" {
     min_tls_version = "1.2"
     ftps_state = "Disabled"
     use_32_bit_worker_process = true #Must be true if using Free or Shared ASP tier.
+    linux_fx_version  = "DOCKER|${var.image_registry_url}/${var.repo_name}/${image_name}" #define the images to usecfor you application
   }
 
+  app_settings = local.env_variables 
 
 }
+
