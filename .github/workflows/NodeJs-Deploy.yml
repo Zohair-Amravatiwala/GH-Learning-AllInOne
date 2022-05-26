@@ -10,8 +10,8 @@ on:
         default: true
   # pull_request:
   #   types: [labeled]
-  # push:
-  #   branches: [main, gh-nodejs-deploy]
+  push:
+    branches: [main, gh-nodejs-deploy]
 
 env:
   DOCKER_IMAGE_NAME: nodeapp:latest
@@ -49,10 +49,4 @@ jobs:
           echo "##[command]Run Terraform init"
           terraform  init -input=false -backend-config="resource_group_name=$TF_Backend_RG" -backend-config="storage_account_name=$TF_Backend_StorageAcc_Name" -backend-config="container_name=$TF_Backend_Container_Name" -backend-config="key='$GITHUB_WORKFLOW/terraform.tfstate'"
           echo "##[command]Run Terraform plan"
-          terraform  plan -input=false -out=tfPlan -var-file=terraform-dev.tfvars 
-          # if ${{ github.event.inputs.PlanOnly }}
-          # then
-          #   echo "Terraform Plan Only"
-          # else
-          #   echo "##[command]Run Terraform apply"
-          #   terraform apply -var-file=terraform-dev.tfvars -auto-approve -input=false tfPlan
+          terraform  plan -input=false -out=tfPlan -var-file=terraform-dev.tfvars
